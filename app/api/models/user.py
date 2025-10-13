@@ -11,5 +11,14 @@ class User(BaseTableModel):
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=True)
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
     def __str__(self):
         return "User: {}".format(self.username)

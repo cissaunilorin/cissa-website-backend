@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session
 
 from app.core.base.model import BaseTableModel
 
-Model = TypeVar("T", bound=BaseTableModel)
+T = TypeVar("T", bound=BaseTableModel)
 
 
-class BaseRepository(Generic[Model]):
+class BaseRepository(Generic[T]):
     """
     Base repository class for CRUD operations.
     This class provides a generic interface for performing CRUD operations on SQLAlchemy models.
@@ -16,11 +16,11 @@ class BaseRepository(Generic[Model]):
         db (Session): The SQLAlchemy session.
     """
 
-    def __init__(self, model: Type[Model], db: Session):
+    def __init__(self, model: Type[T], db: Session):
         self.model = model
         self.db = db
 
-    def create(self, obj: Model) -> Model:
+    def create(self, obj: T) -> T:
         """Create a new object of the model.
         Args:
             obj (Model): The object to be created.
@@ -33,7 +33,7 @@ class BaseRepository(Generic[Model]):
         self.db.refresh(obj)
         return obj
 
-    def get(self, id: str) -> Optional[Model]:
+    def get(self, id: str) -> Optional[T]:
         """Get an object of the model by id.
         Args:
             id (str): The id of the object.
@@ -43,7 +43,7 @@ class BaseRepository(Generic[Model]):
 
         return self.db.query(self.model).filter(self.model.id == id).first()
 
-    def get_all(self) -> List[Model]:
+    def get_all(self) -> List[T]:
         """Get all objects of the model.
 
         This method retrieves all records from the database for the current model.
@@ -54,7 +54,7 @@ class BaseRepository(Generic[Model]):
 
         return self.db.query(self.model).all()
 
-    def update(self, obj: Model) -> Model:
+    def update(self, obj: T) -> T:
         """Update an existing object of the model.
 
         This method updates an existing record in the database with the provided object's data.

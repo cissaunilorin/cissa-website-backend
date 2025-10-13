@@ -42,9 +42,7 @@ def register(
     access_token = jwt_helpers.create_jwt_token("access", user.id)
     refresh_token = jwt_helpers.create_jwt_token("refresh", user.id)
 
-    response_data = schemas.AuthResponseData(
-        id=user.id, username=user.username, email=user.email
-    )
+    response_data = schemas.AuthResponseData(**user.to_dict())
 
     return schemas.AuthResponse(
         status_code=status.HTTP_201_CREATED,
@@ -82,9 +80,7 @@ def login(
     access_token = jwt_helpers.create_jwt_token("access", user.id)
     refresh_token = jwt_helpers.create_jwt_token("refresh", user.id)
 
-    response_data = schemas.AuthResponseData(
-        id=user.id, username=user.username, email=user.email
-    )
+    response_data = schemas.AuthResponseData(**user.to_dict())
 
     return schemas.AuthResponse(
         status_code=status.HTTP_201_CREATED,
@@ -130,9 +126,7 @@ def refresh_token(schema: schemas.TokenRefreshRequest):
     tags=["Authentication"],
 )
 def get_user(current_user: Annotated[User, Depends(get_current_user)]):
-    user_schema = schemas.AuthResponseData(
-        id=current_user.id, username=current_user.username, email=current_user.email
-    )
+    user_schema = schemas.AuthResponseData(**current_user.to_dict())
 
     return schemas.UserResponse(
         status_code=status.HTTP_200_OK,
