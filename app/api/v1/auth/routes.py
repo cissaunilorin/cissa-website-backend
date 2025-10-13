@@ -36,7 +36,7 @@ def register(
 
     service = UserService(db=db)
 
-    user = service.register(db=db, schema=schema)
+    user = service.register(schema=schema)
 
     # Create access and refresh tokens
     access_token = jwt_helpers.create_jwt_token("access", user.id)
@@ -74,7 +74,7 @@ def login(
 
     service = UserService(db=db)
 
-    user = service.authenticate(db=db, schema=schema)
+    user = service.authenticate(schema=schema)
 
     # Create access and refresh tokens
     access_token = jwt_helpers.create_jwt_token("access", user.id)
