@@ -10,7 +10,7 @@ jobs:
   ci-pipeline:
     runs-on: ubuntu-latest
     env:
-      ENV: ${{ secrets.ENV }}
+      ENV: ${{ secrets.ENCODED_ENV }}
 
     steps:
       # Checkout code
