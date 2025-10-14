@@ -11,3 +11,6 @@ class PaginatedResponse(BaseModel):
     current_page: int
     page_size: int
     items: list
+
+class PaginatedResponseModel(BaseResponseModel):
+    data: PaginatedResponse
