@@ -1,7 +1,8 @@
 from typing import Generic, TypeVar, Type, Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 
 from app.core.base.model import BaseTableModel
+from app.core.base.schema import PaginatedResponse
 
 T = TypeVar("T", bound=BaseTableModel)
 
@@ -94,4 +95,45 @@ class BaseRepository(Generic[T]):
             self.db.commit()
             return True
         return False
+    
+    def base_query(self) -> Query[T]:
+        """Get the base query for the model.
+
+        This method returns a SQLAlchemy Query object for the current model, which can be further customized or filtered as needed.
+
+        Returns:
+            Query[Model]: A SQLAlchemy Query object for the model.
+        """
+
+        return self.db.query(self.model)
+    
+    def paginate(
+        self, query: Query[T], page: int, page_size: int
+    ) -> PaginatedResponse:
+        """Paginate the results of a query.
+
+        Args:
+            query (Query[T]): The SQLAlchemy query object to paginate.
+            page (int): The page number to retrieve.
+            page_size (int): The number of items per page.
+
+        Returns:
+            PaginatedResponse: A PaginatedResponse object containing pagination information and the list of items for the requested page.
+        """
+
+        # get total pages
+        total_pages = (query.count() + page_size - 1) // page_size
+
+        # return a dict with pagination info
+        if page > total_pages and total_pages != 0:
+            page = total_pages
+
+        return PaginatedResponse(
+            total_items=query.count(),
+            total_pages=total_pages,
+            current_page=page,
+            page_size=page_size,
+            items=query.offset((page - 1) * page_size).limit(page_size).all(),
+        )
+
 
