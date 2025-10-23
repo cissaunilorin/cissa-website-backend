@@ -155,7 +155,6 @@ def delete_signatory(
 )
 def get_all_announcements(
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
     page: int = 1,
     page_size: int = 10,
 ):
@@ -171,6 +170,11 @@ def get_all_announcements(
     service = AnnouncementService(db=db)
 
     paginated_data = service.list_announcements(page=page, page_size=page_size)
+
+    paginated_data.items = [
+        schemas.AnnouncementResponse(**announcement.to_dict())
+        for announcement in paginated_data.items
+    ]
 
     return schemas.AnnouncementsListResponseModel(
         status_code=status.HTTP_200_OK,
@@ -260,7 +264,6 @@ def update_announcement(
 def get_announcement_by_id(
     announcement_id: str,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
 ):
     """Endpoint to retrieve an announcement by its ID
 

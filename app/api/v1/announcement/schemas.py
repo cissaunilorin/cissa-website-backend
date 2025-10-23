@@ -1,8 +1,8 @@
 from typing import Annotated, List, Optional
+from datetime import datetime
 
 from pydantic import BaseModel, StringConstraints
-from app.core.base.schema import BaseResponseModel,PaginatedResponseModel, PaginatedResponse
-
+from app.core.base.schema import BaseResponseModel,PaginatedResponseModel
 # create signatory request schema
 class SignatoryRequest(BaseModel):
     name: Annotated[str, StringConstraints(max_length=255)]
@@ -16,7 +16,7 @@ class AnnouncementRequest(BaseModel):
     category: Annotated[str, StringConstraints(max_length=100)]
     body: str
     session: Annotated[str, StringConstraints(max_length=100)]
-    published_at: Annotated[str, StringConstraints(max_length=100)]
+    published_at: datetime
     signatories: List[str]
 
 # response schema for signatory
@@ -34,7 +34,7 @@ class AnnouncementResponse(BaseModel):
     category: str
     body: str
     session: str
-    published_at: str
+    published_at: datetime
     signatories: List[SignatoryResponseData]
 
 class AnnouncementResponseModel(BaseResponseModel):
@@ -44,7 +44,7 @@ class SignatoryResponseModel(BaseResponseModel):
     data: SignatoryResponseData
 
 class AnnouncementsListResponseModel(PaginatedResponseModel):
-    data: PaginatedResponse
+    pass
 
 class SignatoriesListResponseModel(BaseResponseModel):
     data: List[SignatoryResponseData]
@@ -52,15 +52,15 @@ class SignatoriesListResponseModel(BaseResponseModel):
 # update 
 
 class AnnouncementUpdateRequest(BaseModel):
-    title: Optional[Annotated[str, StringConstraints(max_length=255)]]
-    category: Optional[Annotated[str, StringConstraints(max_length=100)]]
-    body: Optional[str]
-    session: Optional[Annotated[str, StringConstraints(max_length=100)]]
-    published_at: Optional[Annotated[str, StringConstraints(max_length=100)]]
-    signatories: Optional[List[str]]
+    title: Optional[Annotated[str, StringConstraints(max_length=255)]] = None
+    category: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    body: Optional[str] = None
+    session: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    published_at: Optional[datetime] = None
+    signatories: Optional[List[str]] = None
 
 class SignatoryUpdateRequest(BaseModel):
-    name: Optional[Annotated[str, StringConstraints(max_length=255)]]
-    alias: Optional[Annotated[str, StringConstraints(max_length=255)]]
-    role: Optional[Annotated[str, StringConstraints(max_length=100)]]
-    contact: Optional[Annotated[str, StringConstraints(max_length=55)]]
+    name: Optional[Annotated[str, StringConstraints(max_length=255)]] = None
+    alias: Optional[Annotated[str, StringConstraints(max_length=255)]] = None
+    role: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    contact: Optional[Annotated[str, StringConstraints(max_length=55)]] = None
