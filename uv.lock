@@ -89,7 +89,7 @@ wheels = [
 ]
 
 [[package]]
-name = "cissa-backend"
+name = "cissa-website-backend"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
