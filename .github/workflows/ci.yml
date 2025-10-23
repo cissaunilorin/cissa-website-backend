@@ -23,16 +23,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Install Poetry
-      - name: Install Poetry
+      # Install uv
+      - name: Install uv
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "export PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "${HOME}/.local/bin" >> $GITHUB_PATH
 
       # Install dependencies
       - name: Install dependencies
         run: |
-          poetry install --with dev --no-root
+          uv sync --all-extras --dev
 
       - name: Decode and create .env file
         run: |
@@ -40,14 +40,14 @@ jobs:
 
       - name: Run migrations
         run: |
-          poetry run alembic upgrade head
+          uv run alembic upgrade head
 
       # Run Ruff
       - name: Run Ruff
         run: |
-          poetry run ruff check ./app ./tests --output-format=github
+          uv run ruff check ./app ./tests --output-format=github
 
       # Run tests
       - name: Run Pytest
         run: |
-          poetry run pytest -v --disable-warnings
+          uv run pytest -v --disable-warnings
