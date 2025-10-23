@@ -240,3 +240,18 @@ class AnnouncementService:
         query = self.repository.base_query()
 
         return self.repository.paginate(query, page, page_size)
+
+    def get_by_id(self, announcement_id: str) -> Announcement:
+        """Retrieves an announcement by ID
+        Args:
+            announcement_id (str): ID of the announcement to retrieve
+        Returns:
+            Announcement: Announcement object
+        """
+        announcement = self.repository.get(announcement_id)
+        if not announcement:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Announcement not found",
+            )
+        return announcement
