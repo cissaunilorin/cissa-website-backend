@@ -24,10 +24,15 @@ class Settings(BaseSettings):
     DATABASE_NAME: str
     DATABASE_TYPE: str
 
+    # Supabase configurations
+    SUPABASE_URL: str
+    SUPABASE_KEY: str
+
     # Directories
     MEDIA_DIR: str = os.path.join(BASE_DIR, "media")
     STATIC_DIR: str = os.path.join(BASE_DIR, "static")
     TEMPLATES_DIR: str = os.path.join(BASE_DIR, "templates")
+    
 
     @property
     def database_url(self) -> str:
