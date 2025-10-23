@@ -27,8 +27,8 @@ async def lifespan(app: FastAPI):
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
-    title="Boilerplate",
-    description="FastAPI Boilerplate Application",
+    title="CISSA Website API",
+    description="API for CISSA Website",
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/v1/docs",
@@ -57,13 +57,13 @@ app.include_router(main_router)
 async def get_root(request: Request) -> dict:
     return JSONResponse(
         status_code=status.HTTP_200_OK,
-        content={"URL": "", "message": "Welcome to the boilerplate API"},
+        content={"URL": "", "message": "Welcome to the CISSA Website API"},
     )
 
 
 @app.get("/probe", tags=["Home"])
 async def probe():
-    return {"message": "I am the Python FastAPI API responding"}
+    return {"message": "I am the CISSA Website API responding"}
 
 
 # REGISTER EXCEPTION HANDLERS
