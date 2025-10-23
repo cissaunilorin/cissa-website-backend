@@ -1,7 +1,7 @@
 from typing import Annotated, List, Optional
 
 from pydantic import BaseModel, StringConstraints
-from app.core.base.schema import BaseResponseModel,PaginatedResponseModel
+from app.core.base.schema import BaseResponseModel,PaginatedResponseModel, PaginatedResponse
 
 # create signatory request schema
 class SignatoryRequest(BaseModel):
@@ -44,7 +44,7 @@ class SignatoryResponseModel(BaseResponseModel):
     data: SignatoryResponseData
 
 class AnnouncementsListResponseModel(PaginatedResponseModel):
-    data: PaginatedResponseModel
+    data: PaginatedResponse
 
 class SignatoriesListResponseModel(BaseResponseModel):
     data: List[SignatoryResponseData]
