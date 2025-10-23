@@ -1,28 +1,29 @@
-[tool.poetry]
+[project]
 name = "cissa-backend"
 version = "0.1.0"
 description = "A backend service for Cissa web application."
-authors = ["Franklin Ikeh <ikehfranklin06@gmail.com>"]
+authors = [{ name = "Franklin Ikeh", email = "ikehfranklin06@gmail.com" }]
+requires-python = ">=3.11,<3.13"
 readme = "README.md"
+dependencies = [
+    "fastapi[standard]>=0.115.6,<0.116",
+    "uvicorn>=0.34.0,<0.35",
+    "alembic>=1.14.0,<2",
+    "itsdangerous>=2.2.0,<3",
+    "python-jose>=3.3.0,<4",
+    "psycopg2-binary>=2.9.10,<3",
+    "passlib[bcrypt]>=1.7.4,<2",
+    "pydantic-settings>=2.7.0,<3",
+    "uuid7>=0.1.0,<0.2",
+    "slowapi>=0.1.0,<0.2",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = {extras = ["standard"], version = "^0.115.6"}
-uvicorn = "^0.34.0"
-alembic = "^1.14.0"
-itsdangerous = "^2.2.0"
-python-jose = "^3.3.0"
-psycopg2-binary = "^2.9.10"
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-pydantic-settings = "^2.7.0"
-uuid7 = "^0.1.0"
-slowapi = "^0.1.0"
-
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.8.3"
-pytest = "^8.3.4"
+[dependency-groups]
+dev = [
+    "ruff>=0.8.3,<0.9",
+    "pytest>=8.3.4,<9",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
