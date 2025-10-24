@@ -33,6 +33,7 @@ class SignatoryResponseData(BaseModel):
 class AnnouncementResponse(BaseModel):
     id: str
     title: str
+    image_url: Optional[str]
     category: str
     body: str
     session: str

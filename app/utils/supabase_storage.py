@@ -9,7 +9,7 @@ supabase: Client = create_client(
 )
 
 
-def upload_image_to_supabase(file: UploadFile, bucket: str, path: str) -> str:
+async def upload_image_to_supabase(file: UploadFile, bucket: str, path: str) -> str:
     """
     Uploads an image to Supabase Storage and returns the public URL.
     Args:
@@ -21,27 +21,24 @@ def upload_image_to_supabase(file: UploadFile, bucket: str, path: str) -> str:
     """
 
     try:
-        file_bytes = file.file.read()
-        file.file.seek(0)  # Reset file pointer after reading
+        file_bytes = await file.read()
 
         # Upload the file to Supabase Storage
         supabase.storage.from_(bucket).upload(
             path,
             file=file_bytes,
-            file_options={"content_type": file.content_type, "upsert": "true"},
+            file_options={"content-type": file.content_type, "upsert": "true"},
         )
     except Exception as e:
         logger.error(f"Failed to upload image: {str(e)}")
         raise Exception(f"Failed to upload image: {str(e)}") from e
-    finally:
-        file.file.close()
 
     # Get the public URL of the uploaded image
     public_url = supabase.storage.from_(bucket).get_public_url(path)
 
-    logger.info(f"Image uploaded to Supabase Storage at {public_url['publicURL']}")
+    logger.info(f"Image uploaded to Supabase Storage at {public_url}")
 
-    return public_url["publicURL"]
+    return public_url
 
 
 def delete_image_from_supabase(bucket: str, path: str) -> None:

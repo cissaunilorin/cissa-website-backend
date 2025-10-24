@@ -121,7 +121,7 @@ class AnnouncementService:
         self.repository = AnnouncementRepository(db)
         self.signatory_repository = SignatoryRepository(db)
 
-    def create(self, schema: schemas.AnnouncementForm) -> Announcement:
+    async def create(self, schema: schemas.AnnouncementForm) -> Announcement:
         """Creates a new announcement
         Args:
             schema (schemas.AnnouncementRequest): Announcement creation schema
@@ -143,24 +143,10 @@ class AnnouncementService:
         announcement = Announcement(**announcement_data)
         announcement.signatories = signatories
 
-        image_path = f"announcements/{announcement.id}/{schema.image.filename}"
-
-        try:
-            announcement.image_url = upload_image_to_supabase(
-                schema.image, "announcements", image_path
-            )
-        except Exception as e:
-            logger.error(
-                f"Error uploading image for announcement with title: {announcement.title} - {str(e)}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An error occurred while uploading the announcement image",
-            )
-
+        # create announcement in the database
         try:
             logger.info(f"Creating announcement with title: {announcement.title}")
-            return self.repository.create(announcement)
+            new_announcement = self.repository.create(announcement)
         except Exception as e:
             logger.error(
                 f"Error creating announcement with title: {announcement.title} - {str(e)}"
@@ -170,7 +156,41 @@ class AnnouncementService:
                 detail="An error occurred while creating the announcement",
             )
 
-    def update(
+        # upload image to supabase storage
+        image_path = f"announcements/{new_announcement.id}.{schema.image.filename.split('.')[-1]}"
+
+        try:
+            logger.info(
+                f"Uploading image for announcement with title: {new_announcement.title}"
+            )
+            new_announcement.image_url = await upload_image_to_supabase(
+                schema.image, "announcements", image_path
+            )
+        except Exception as e:
+            logger.error(
+                f"Error uploading image for announcement with title: {new_announcement.title} - {str(e)}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An error occurred while uploading the announcement image",
+            )
+
+        # update announcement with image URL
+        try:
+            logger.info(
+                f"Updating announcement with image URL for title: {new_announcement.title}"
+            )
+            return self.repository.update(new_announcement)
+        except Exception as e:
+            logger.error(
+                f"Error updating announcement with image URL for title: {new_announcement.title} - {str(e)}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An error occurred while updating the announcement with image URL",
+            )
+
+    async def update(
         self, announcement_id: str, schema: schemas.AnnouncementUpdateForm
     ) -> Announcement:
         """Updates an existing announcement
@@ -200,10 +220,13 @@ class AnnouncementService:
             announcement.signatories = signatories
 
         if schema.image is not None:
-            image_path = f"announcements/{announcement.id}/{schema.image.filename}"
+            image_path = f"announcements/{announcement.id}.{schema.image.filename.split('.')[-1]}"
 
             try:
-                announcement.image_url = upload_image_to_supabase(
+                logger.info(
+                    f"Updating announcement with image URL for title: {announcement.title}"
+                )
+                announcement.image_url = await upload_image_to_supabase(
                     schema.image, "announcements", image_path
                 )
             except Exception as e:
@@ -247,7 +270,8 @@ class AnnouncementService:
             )
 
         if announcement.image_url:
-            image_path = f"announcements/{announcement.id}/{announcement.image_url.split('/')[-1]}"
+            filename = announcement.image_url.split("/")[-1]
+            image_path = f"announcements/{announcement.id}.{filename.split('.')[-1]}"
             try:
                 delete_image_from_supabase("announcements", image_path)
             except Exception as e:

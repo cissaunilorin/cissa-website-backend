@@ -191,7 +191,7 @@ def get_all_announcements(
     description="This endpoint creates a new announcement",
     tags=["Announcement"],
 )
-def create_announcement(
+async def create_announcement(
     schema: Annotated[schemas.AnnouncementForm, Form()],
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
@@ -206,7 +206,7 @@ def create_announcement(
 
     service = AnnouncementService(db=db)
 
-    announcement = service.create(schema=schema)
+    announcement = await service.create(schema=schema)
 
     response_data = schemas.AnnouncementResponse(**announcement.to_dict())
 
@@ -225,7 +225,7 @@ def create_announcement(
     description="This endpoint updates an existing announcement",
     tags=["Announcement"],
 )
-def update_announcement(
+async def update_announcement(
     announcement_id: str,
     schema: Annotated[schemas.AnnouncementUpdateForm, Form()],
     db: Annotated[Session, Depends(get_db)],
@@ -242,7 +242,7 @@ def update_announcement(
 
     service = AnnouncementService(db=db)
 
-    announcement = service.update(announcement_id=announcement_id, schema=schema)
+    announcement = await service.update(announcement_id=announcement_id, schema=schema)
 
     response_data = schemas.AnnouncementResponse(**announcement.to_dict())
 
