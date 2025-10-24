@@ -17,6 +17,7 @@ dependencies = [
     "uuid7>=0.1.0,<0.2",
     "slowapi>=0.1.0,<0.2",
     "supabase>=2.22.1",
+    "python-multipart>=0.0.20",
 ]
 
 [dependency-groups]
