@@ -1,5 +1,6 @@
 from typing import Annotated, List, Optional
 from datetime import datetime
+from fastapi import UploadFile
 
 from pydantic import BaseModel, StringConstraints
 from app.core.base.schema import BaseResponseModel,PaginatedResponseModel
@@ -10,9 +11,10 @@ class SignatoryRequest(BaseModel):
     role: Annotated[str, StringConstraints(max_length=100)]
     contact: Optional[Annotated[str, StringConstraints(max_length=55)]]
 
-# create announcement request schema
-class AnnouncementRequest(BaseModel):
+# create announcement form schema
+class AnnouncementForm(BaseModel):
     title: Annotated[str, StringConstraints(max_length=255)]
+    image: UploadFile
     category: Annotated[str, StringConstraints(max_length=100)]
     body: str
     session: Annotated[str, StringConstraints(max_length=100)]
@@ -51,8 +53,9 @@ class SignatoriesListResponseModel(BaseResponseModel):
 
 # update 
 
-class AnnouncementUpdateRequest(BaseModel):
+class AnnouncementUpdateForm(BaseModel):
     title: Optional[Annotated[str, StringConstraints(max_length=255)]] = None
+    image: Optional[UploadFile] = None
     category: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     body: Optional[str] = None
     session: Optional[Annotated[str, StringConstraints(max_length=100)]] = None

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Response
+from fastapi import APIRouter, Depends, status, Response, Form
 from sqlalchemy.orm import Session
 from typing import Annotated
 
@@ -192,7 +192,7 @@ def get_all_announcements(
     tags=["Announcement"],
 )
 def create_announcement(
-    schema: schemas.AnnouncementRequest,
+    schema: Annotated[schemas.AnnouncementForm, Form()],
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
@@ -227,7 +227,7 @@ def create_announcement(
 )
 def update_announcement(
     announcement_id: str,
-    schema: schemas.AnnouncementUpdateRequest,
+    schema: Annotated[schemas.AnnouncementUpdateForm, Form()],
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):

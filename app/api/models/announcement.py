@@ -39,6 +39,7 @@ class Announcement(BaseTableModel):
     __tablename__ = "announcements"
 
     title = Column(String, nullable=False)
+    image_url = Column(String, nullable=True)
     category = Column(String, nullable=False)
     body = Column(Text, nullable=False)
     session = Column(String, nullable=False)
@@ -54,6 +55,7 @@ class Announcement(BaseTableModel):
         return {
             "id": self.id,
             "title": self.title,
+            "image_url": self.image_url,
             "category": self.category,
             "body": self.body,
             "session": self.session,

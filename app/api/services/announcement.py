@@ -8,6 +8,10 @@ from app.api.repositories.announcement import (
 )
 from app.api.v1.announcement import schemas
 from app.utils.logger import logger
+from app.utils.supabase_storage import (
+    upload_image_to_supabase,
+    delete_image_from_supabase,
+)
 
 from app.core.base.schema import PaginatedResponse
 
@@ -117,7 +121,7 @@ class AnnouncementService:
         self.repository = AnnouncementRepository(db)
         self.signatory_repository = SignatoryRepository(db)
 
-    def create(self, schema: schemas.AnnouncementRequest) -> Announcement:
+    def create(self, schema: schemas.AnnouncementForm) -> Announcement:
         """Creates a new announcement
         Args:
             schema (schemas.AnnouncementRequest): Announcement creation schema
@@ -135,9 +139,24 @@ class AnnouncementService:
                 )
             signatories.append(signatory)
 
-        announcement_data = schema.model_dump(exclude={"signatories"})
+        announcement_data = schema.model_dump(exclude={"signatories", "image"})
         announcement = Announcement(**announcement_data)
         announcement.signatories = signatories
+
+        image_path = f"announcements/{announcement.id}/{schema.image.filename}"
+
+        try:
+            announcement.image_url = upload_image_to_supabase(
+                schema.image, "announcements", image_path
+            )
+        except Exception as e:
+            logger.error(
+                f"Error uploading image for announcement with title: {announcement.title} - {str(e)}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An error occurred while uploading the announcement image",
+            )
 
         try:
             logger.info(f"Creating announcement with title: {announcement.title}")
@@ -152,7 +171,7 @@ class AnnouncementService:
             )
 
     def update(
-        self, announcement_id: str, schema: schemas.AnnouncementUpdateRequest
+        self, announcement_id: str, schema: schemas.AnnouncementUpdateForm
     ) -> Announcement:
         """Updates an existing announcement
         Args:
@@ -180,8 +199,24 @@ class AnnouncementService:
                 signatories.append(signatory)
             announcement.signatories = signatories
 
+        if schema.image is not None:
+            image_path = f"announcements/{announcement.id}/{schema.image.filename}"
+
+            try:
+                announcement.image_url = upload_image_to_supabase(
+                    schema.image, "announcements", image_path
+                )
+            except Exception as e:
+                logger.error(
+                    f"Error uploading image for announcement with title: {announcement.title} - {str(e)}"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="An error occurred while uploading the announcement image",
+                )
+
         for key, value in schema.model_dump(
-            exclude_unset=True, exclude={"signatories"}
+            exclude_unset=True, exclude={"signatories", "image"}
         ).items():
             setattr(announcement, key, value)
 
@@ -210,6 +245,19 @@ class AnnouncementService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Announcement not found",
             )
+
+        if announcement.image_url:
+            image_path = f"announcements/{announcement.id}/{announcement.image_url.split('/')[-1]}"
+            try:
+                delete_image_from_supabase("announcements", image_path)
+            except Exception as e:
+                logger.error(
+                    f"Error deleting image for announcement with title: {announcement.title} - {str(e)}"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="An error occurred while deleting the announcement image",
+                )
 
         try:
             logger.info(f"Deleting announcement with ID: {announcement_id}")
