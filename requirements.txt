@@ -4,7 +4,6 @@ anyio==4.8.0
 bcrypt==4.3.0
 certifi==2025.1.31
 cffi==2.0.0
--e file:///home/franklin/dev/projects/cissa-paragon/cissa-website-backend
 click==8.1.8
 cryptography==46.0.3
 deprecated==1.2.18
