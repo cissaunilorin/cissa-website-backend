@@ -9,8 +9,8 @@ from app.api.v1.announcement import schemas
 from app.api.services.announcement import AnnouncementService, SignatoryService
 from app.api.models.user import User
 
-signatory = APIRouter(prefix="/signatory", tags=["Signatory"])
-announcement = APIRouter(prefix="/announcement", tags=["Announcement"])
+signatory = APIRouter(prefix="/signatories", tags=["Signatories"])
+announcement = APIRouter(prefix="/announcements", tags=["Announcements"])
 
 
 @signatory.post(
