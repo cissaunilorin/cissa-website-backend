@@ -19,7 +19,6 @@ announcement = APIRouter(prefix="/announcements", tags=["Announcements"])
     response_model=schemas.SignatoryResponseModel,
     summary="Create a new signatory",
     description="This endpoint creates a new signatory for announcements",
-    tags=["Signatory"],
 )
 def create_signatory(
     schema: schemas.SignatoryRequest,
@@ -53,7 +52,6 @@ def create_signatory(
     response_model=schemas.SignatoriesListResponseModel,
     summary="Get all signatories",
     description="This endpoint retrieves all signatories",
-    tags=["Signatory"],
 )
 def get_all_signatories(
     db: Annotated[Session, Depends(get_db)],
@@ -88,7 +86,6 @@ def get_all_signatories(
     response_model=schemas.SignatoryResponseModel,
     summary="Update an existing signatory",
     description="This endpoint updates an existing signatory",
-    tags=["Signatory"],
 )
 def update_signatory(
     signatory_id: str,
@@ -123,7 +120,6 @@ def update_signatory(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an existing signatory",
     description="This endpoint deletes an existing signatory",
-    tags=["Signatory"],
 )
 def delete_signatory(
     signatory_id: str,
@@ -151,7 +147,6 @@ def delete_signatory(
     response_model=schemas.AnnouncementsListResponseModel,
     summary="Get all announcements",
     description="This endpoint retrieves all announcements",
-    tags=["Announcement"],
 )
 def get_all_announcements(
     db: Annotated[Session, Depends(get_db)],
@@ -189,7 +184,6 @@ def get_all_announcements(
     response_model=schemas.AnnouncementResponseModel,
     summary="Create a new announcement",
     description="This endpoint creates a new announcement",
-    tags=["Announcement"],
 )
 async def create_announcement(
     schema: Annotated[schemas.AnnouncementForm, Form()],
@@ -223,7 +217,6 @@ async def create_announcement(
     response_model=schemas.AnnouncementResponseModel,
     summary="Update an existing announcement",
     description="This endpoint updates an existing announcement",
-    tags=["Announcement"],
 )
 async def update_announcement(
     announcement_id: str,
@@ -259,7 +252,6 @@ async def update_announcement(
     response_model=schemas.AnnouncementResponseModel,
     summary="Get an announcement by ID",
     description="This endpoint retrieves an announcement by its ID",
-    tags=["Announcement"],
 )
 def get_announcement_by_id(
     announcement_id: str,
@@ -291,7 +283,6 @@ def get_announcement_by_id(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an existing announcement",
     description="This endpoint deletes an existing announcement",
-    tags=["Announcement"],
 )
 def delete_announcement(
     announcement_id: str,
