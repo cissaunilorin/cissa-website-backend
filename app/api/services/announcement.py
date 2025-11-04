@@ -317,6 +317,9 @@ class AnnouncementService:
 
         query = self.repository.base_query()
 
+        # sort from latest to oldest
+        query = query.order_by(Announcement.published_at.desc())
+
         return self.repository.paginate(query, page, page_size)
 
     def get_by_id(self, announcement_id: str) -> Announcement:
