@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+from uuid_extensions import uuid7
 
 from app.api.models.announcement import Announcement, Signatory
 from app.api.repositories.announcement import (
@@ -141,53 +142,58 @@ class AnnouncementService:
 
         announcement_data = schema.model_dump(exclude={"signatories", "image"})
         announcement = Announcement(**announcement_data)
+        announcement.id = str(uuid7())
         announcement.signatories = signatories
 
-        # create announcement in the database
-        try:
-            logger.info(f"Creating announcement with title: {announcement.title}")
-            new_announcement = self.repository.create(announcement)
-        except Exception as e:
-            logger.error(
-                f"Error creating announcement with title: {announcement.title} - {str(e)}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An error occurred while creating the announcement",
-            )
-
         # upload image to supabase storage
-        image_path = f"announcements/{new_announcement.id}.{schema.image.filename.split('.')[-1]}"
+        image_path = (
+            f"announcements/{announcement.id}.{schema.image.filename.split('.')[-1]}"
+        )
 
         try:
             logger.info(
-                f"Uploading image for announcement with title: {new_announcement.title}"
+                f"Uploading image for announcement with title: {announcement.title}"
             )
-            new_announcement.image_url = await upload_image_to_supabase(
+
+            announcement.image_url = await upload_image_to_supabase(
                 schema.image, "announcements", image_path
             )
         except Exception as e:
             logger.error(
-                f"Error uploading image for announcement with title: {new_announcement.title} - {str(e)}"
+                f"Error uploading image for announcement with title: {announcement.title} - {str(e)}"
             )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="An error occurred while uploading the announcement image",
             )
 
-        # update announcement with image URL
+        # create announcement in the database
         try:
-            logger.info(
-                f"Updating announcement with image URL for title: {new_announcement.title}"
-            )
-            return self.repository.update(new_announcement)
+            logger.info(f"Creating announcement with title: {announcement.title}")
+            return self.repository.create(announcement)
         except Exception as e:
             logger.error(
-                f"Error updating announcement with image URL for title: {new_announcement.title} - {str(e)}"
+                f"Error creating announcement with title: {announcement.title} - {str(e)}"
             )
+
+            # if something goes wrong, delete the uploaded image
+            filename = announcement.image_url.split("/")[-1]
+            image_path = f"announcements/{announcement.id}.{filename.split('.')[-1]}"
+            try:
+                delete_image_from_supabase("announcements", image_path)
+            except Exception as e:
+                logger.error(
+                    f"Error deleting image for announcement with title: {announcement.title} - {str(e)}"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="An error occurred while deleting the announcement image",
+                )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An error occurred while updating the announcement with image URL",
+                detail="An error occurred while creating the announcement",
             )
 
     async def update(

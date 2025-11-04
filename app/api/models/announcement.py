@@ -38,6 +38,7 @@ class Signatory(BaseTableModel):
 class Announcement(BaseTableModel):
     __tablename__ = "announcements"
 
+    id = Column(String, primary_key=True, index=True)
     title = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
     category = Column(String, nullable=False)
