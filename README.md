@@ -1,71 +1,115 @@
-# FastAPI Boilerplate
+# CISSA Website Backend
 
-## Setup
+A robust backend service for the CISSA (Computer and Information Systems Student Association) web application, built with FastAPI and Python.
 
-### Clone your repo
+## 🚀 Features
 
-- Clone your repository after creating it with this template.
+- **Authentication**: Secure user authentication and management using JWT and Supabase.
+- **Announcements**: Comprehensive CRUD operations for managing announcements.
+- **Signatories**: Management of signatories for announcements.
+- **Rate Limiting**: Built-in rate limiting to protect API endpoints using `slowapi`.
+- **Database**: PostgreSQL integration with SQLAlchemy ORM and Alembic for migrations.
+- **Documentation**: Auto-generated interactive API documentation (Swagger UI & ReDoc).
 
-### Start up the FastAPI server
+## 🛠️ Tech Stack
 
-- Install Poetry:
+- **Language**: Python 3.11+
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/)
+- **Database**: PostgreSQL
+- **ORM**: SQLAlchemy
+- **Migrations**: Alembic
+- **Package Manager**: [uv](https://github.com/astral-sh/uv) (Recommended)
 
-```sh
-curl -sSL https://install.python-poetry.org | python3 -
-```
+## 📋 Prerequisites
 
-- Install project dependencies using Poetry:
+Before you begin, ensure you have the following installed:
 
-```sh
-poetry install
-```
+- Python 3.11 or higher
+- PostgreSQL
+- [uv](https://github.com/astral-sh/uv) (optional but recommended for faster dependency management)
 
-- Activate the virtual environment managed by Poetry:
+## 🔧 Installation & Setup
 
-```sh
-poetry shell
-```
+1. **Clone the repository**
 
-- Create a `.env` file by copying the `.env.sample` file:
+   ```bash
+   git clone <repository-url>
+   cd cissa-website-backend
+   ```
 
-```sh
-cp .env.sample .env
-```
+2. **Set up environment variables**
+   Copy the sample environment file and configure your variables:
 
-- Start the server:
+   ```bash
+   cp .env.sample .env
+   ```
 
-```sh
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
+   Update `.env` with your database credentials, secret keys, and other configuration.
 
-### Setup database
+3. **Install dependencies**
 
-To set up the database, follow the following steps:
+   Initialize the environment and install dependencies:
 
-- **Create your local database**
+   ```bash
+   uv sync
+   ```
+
+4. **Database Setup**
+
+   Create your local PostgreSQL database:
+
+   ```sql
+   CREATE DATABASE cissa_backend;
+   ```
+
+   Run migrations to set up the schema:
+
+   ```bash
+   uv run alembic upgrade head
+   ```
+
+## ⚡ Running the Application
+
+Start the development server:
 
 ```bash
-sudo -u <user> psql
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 7001
 ```
 
-```sql
-CREATE DATABASE database_name;
-```
+The API will be available at `http://localhost:7001`.
 
-- **Making migrations**
+## 📖 API Documentation
+
+Once the server is running, you can access the interactive API documentation:
+
+- **Swagger UI**: [http://localhost:7001/v1/docs](http://localhost:7001/v1/docs)
+- **ReDoc**: [http://localhost:7001/v1/redoc](http://localhost:7001/v1/redoc)
+
+## 🧪 Running Tests
+
+Run the test suite using pytest:
 
 ```bash
-alembic revision --autogenerate -m 'initial migration'
-alembic upgrade head
+uv run pytest
 ```
 
-- **Adding tables and columns to models**
-  After creating new tables or adding new models, make sure to run:
+## 📂 Project Structure
 
-```bash
-alembic revision --autogenerate -m "Migration message"
+```text
+cissa-website-backend/
+├── alembic/              # Database migrations
+├── app/
+│   ├── api/              # API endpoints and logic
+│   │   ├── models/       # Database models
+│   │   ├── repositories/ # Data access layer
+│   │   ├── services/     # Business logic
+│   │   └── v1/           # API Routers (Auth, Announcement, etc.)
+│   ├── core/             # Application configuration
+│   ├── db/               # Database connection
+│   ├── utils/            # Utility functions
+│   └── main.py           # Application entry point
+├── tests/                # Test suite
+├── .env.sample           # Environment variables template
+├── pyproject.toml        # Project dependencies and config
+└── README.md             # Project documentation
 ```
-
-After creating new tables or adding new models, make sure you import the new model properly in the `app/api/models/__init__.py` file.
-
-After importing it in the `__init__.py` file, you don't need to import it in the `/alembic/env.py` file anymore.
