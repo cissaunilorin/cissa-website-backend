@@ -258,9 +258,16 @@ class EventService:
         if title:
             query = self.repository.search_by_title(query, title)
 
-        # sort by most recent first (by date, then time)
-        query = query.order_by(
-            Event.start_date.desc(), Event.start_time.desc()
-        )
+        # sort by date:
+        #   - upcoming: soonest first (ascending), so the next event is on top
+        #   - past / unfiltered: most recent first (descending)
+        if time_status == "upcoming":
+            query = query.order_by(
+                Event.start_date.asc(), Event.start_time.asc()
+            )
+        else:
+            query = query.order_by(
+                Event.start_date.desc(), Event.start_time.desc()
+            )
 
         return self.repository.paginate(query, page, page_size)
